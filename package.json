@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "init": "^0.1.2",
+    "nodemon": "^2.0.19"
+  },
+  "name": "lab10-starter-code",
+  "description": "Lab 10 Starter Code",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clickjaw/Lab10-Starter-Code.git"
+  },
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/clickjaw/Lab10-Starter-Code/issues"
+  },
+  "homepage": "https://github.com/clickjaw/Lab10-Starter-Code#readme"
+}

@@ -1,40 +1,59 @@
-'use strict';
+"use strict";
+const express = require("express");
+require("dotenv").config();
+const weatherRouter = express.Router();
+const axios = require("axios");
 
-let cache = require('./cache.js');
+const cache = {};
 
-module.exports = getWeather;
+weatherRouter.get("/", async (request, response) => {
+  // const cityName = "dallas";
+    const cityName = request.query.cityName
+  const URL = `http://api.weatherbit.io/v2.0/forecast/daily/?key=6479beee993b401ea9769c4021833d9e&lang=en&city=${cityName}&days=5`;
 
-function getWeather(latitude, longitude) {
-  const key = 'weather-' + latitude + longitude;
-  const url = `http://api.weatherbit.io/v2.0/forecast/daily/?key=${WEATHER_API_KEY}&lang=en&lat=${lat}&lon=${lon}&days=5`;
-
-  if (cache[key] && (Date.now() - cache[key].timestamp < 50000)) {
-    console.log('Cache hit');
+  if (cache[cityName] !== undefined) {
+    const ifTime = Date.now();
+    console.log("Getting info from database", cityName, ifTime);
+    response.status(200).send(cache[cityName]);
   } else {
-    console.log('Cache miss');
-    cache[key] = {};
-    cache[key].timestamp = Date.now();
-    cache[key].data = axios.get(url)
-    .then(response => parseWeather(response.data));
-  }
-  
-  return cache[key].data;
-}
+    try{
+      const currentTime =  Date.now();
+      // const timestamp = currentDate.getTime();
+    console.log(`Fetching data: ${currentTime}`);
+    // inMemoryDB[cityName].datetime = Date.now();
+    const res = await axios.get(URL);
 
-function parseWeather(weatherData) {
-  try {
-    const weatherSummaries = weatherData.data.map(day => {
-      return new Weather(day);
-    });
-    return Promise.resolve(weatherSummaries);
-  } catch (e) {
-    return Promise.reject(e);
+    const weatherArray = res.data.data.map((day) => new Weather(day));
+    // response.send(weatherArray);
+    cache[cityName] = weatherArray;
+
+    response.status(200).send(weatherArray);
+    
+    // return inMemoryDB[cityName].data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      console.log(cache)
+    }
+
   }
-}
+
+  // function weatherHandler(request, response) {
+  //   const { lat, lon } = request.query;
+  //   weather(lat, lon)
+  //   .then(summaries => response.send(summaries))
+  //   .catch((error) => {
+  //     console.error(error);
+  //     response.status(200).send('Sorry. Something went wrong!')
+  //   });
+  // }
+}); //end of app.get
 
 class Weather {
   constructor(day) {
     this.forecast = day.weather.description;
     this.time = day.datetime;
   }
-}
+} //end of class Weather
+
+module.exports = weatherRouter;
